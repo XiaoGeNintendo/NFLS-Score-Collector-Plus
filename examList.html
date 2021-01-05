@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="script/bootstrap.min.css">
+        <script src="script/jquery.min.js"></script>
+        <script src="script/popper.min.js"></script>
+        <script src="script/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="script/font-awesome.min.css">
+        <script src="script/core-min.js"></script>
+        <script src="script/aes.js"></script>
+        <script src="script/md5.js"></script>
+        <script src="script/highcharts.js"></script>
+        <script src="exam.js"></script>
+        <script src="plus.js"></script>
+        <title>HHS Exam Score Collector</title>
+    </head>
+    <body>
+        <a href="index.html">Back</a>
+        <center>
+            <h1>Exam List</h1>
+        </center>
+        <hr/>
+        Exam Count: <i id="sz">...</i> <br/>
+
+        <p id="data"></p>
+        <hr/>
+        XGN from Hell Hole Studios 2019
+    </body>
+
+    <script>
+        var exams=getExams();
+        
+        var html="";
+        for(var i=exams.length-1;i>=0;i--){
+            html+='<a class="fa fa-'+exams[i].icon+'" href="exam.html?'+i+'">'+exams[i].name+'</a><br/>';
+        }
+
+        document.getElementById("data").innerHTML=html;
+        document.getElementById("sz").innerHTML=exams.length;
+    </script>
+</html>

@@ -1,0 +1,171 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="script/bootstrap.min.css">
+        <script src="script/jquery.min.js"></script>
+        <script src="script/popper.min.js"></script>
+        <script src="script/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="script/font-awesome.min.css">
+        <script src="script/core-min.js"></script>
+        <script src="script/aes.js"></script>
+        <script src="script/md5.js"></script>
+        <script src="script/highcharts.js"></script>
+        <script src="exam.js"></script>
+        <script src="plus.js"></script>
+        <title>HHS Exam Score Collector</title>
+    </head>
+    <body>
+        <a href="index.html">Back</a>
+        <center>
+            <h1>Graph drawer</h1>
+        </center>
+        <hr/>
+        Enter usernames in the left box, separate with ',' <br/>
+        Enter subjects in the right box, separate with ',' <br/>
+        Click "Draw" button to see the graph <br/>
+        <hr/>
+        <center>
+            <input id="name" class="form-control" placeholder="Username"><input id="subject" class="form-control" placeholder="Subject">
+            <button class="btn btn-primary" onclick="draw()">Draw</button>
+        </center>
+        <hr/>
+        <div id="draw" style="width:80%"></div>
+        <hr/>
+        XGN from Hell Hole Studios 2019
+    </body>
+
+    <script>
+        var exams=getExams();
+
+        function getRank(arr,val){
+            var x=0;
+            for(var i=0;i<arr.length;i++){
+                if(arr[i]>val){
+                    x++;
+                }
+            }
+
+            return x+1;
+        }
+
+        var data=[]
+
+        function equalsIgnoreCase(a,b){
+            return a.toLowerCase()==b.toLowerCase();
+        }
+
+        function getData(user,subject){
+            var short=[],full={}
+            var last=0
+            for(var i=0;i<exams.length;i++){
+                var e=exams[i];
+                var loci=-1,locj=-1;
+                for(var j=0;j<e.subject.length;j++){
+                    if(equalsIgnoreCase(e.subject[j].name,subject)){
+                        locj=j;
+                        break; 
+                    }
+                }
+                for(var j=0;j<e.user.length;j++){
+                    if(equalsIgnoreCase(e.user[j],user)){
+                        loci=j;
+                        break;
+                    }
+                }
+
+                console.log(i+" "+loci+" "+locj)
+                if(locj==-1 || loci==-1){
+                    continue;
+                }
+
+                short.push([i+1,e.data[locj][loci]*100/e.subject[locj].max])
+                full[(i+1)+""]={
+                    "pts":e.data[locj][loci],
+                    "max":e.subject[locj].max,
+                    "last":last
+                }
+
+                last=i+1
+            }
+
+            return {
+                display:full,
+                full:short
+            }
+        }
+
+        function draw(){
+            data=[]
+
+            var ch = Highcharts.chart('draw', {
+                
+                chart :{
+                    zoomType: 'x',
+                },
+                title: {
+                    text: 'Scores(Percentage)'
+                },
+
+                plotOptions: {
+                    line: {
+                        marker: {
+                            enabled: true
+                        }
+                    }
+                },
+                
+                subtitle:{
+                    text:"Scores in percentage"
+                },
+
+                credits:{
+                    enabled:false
+                },
+                series: [],
+                
+                tooltip:{
+                    formatter:function(){
+                        var score=data[this.series.name][this.x+""]
+                        
+                        var pre=(score.pts*100/score.max);
+
+                        var lastpre=0;
+                        if(score.last!=0){
+                            var lastt=data[this.series.name][score.last+""];
+                            lastpre=(lastt.pts*100/lastt.max);
+                        }
+
+                        return this.series.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>+"+(pre-lastpre)+"%";
+                    }
+                }
+                
+            })
+
+            var userList=document.getElementById("name").value.split(",");
+            var subList=document.getElementById("subject").value.split(",");
+
+            for(var i=0;i<userList.length;i++){
+                for(var j=0;j<subList.length;j++){
+
+                    var ret=getData(userList[i],subList[j]);
+                    var name=userList[i]+"-"+subList[j];
+                    
+                    console.log(ret);
+
+                    data[name]=ret.display
+
+                    ch.addSeries({
+                        name:name,
+                        data:ret.full
+                    })
+                }
+            }
+
+            // ch.series=series;
+            ch.redraw();
+        }
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+    </script>
+</html>

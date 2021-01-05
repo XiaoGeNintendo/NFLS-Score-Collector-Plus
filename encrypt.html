@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="script/bootstrap.min.css">
+        <script src="script/jquery.min.js"></script>
+        <script src="script/popper.min.js"></script>
+        <script src="script/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="script/font-awesome.min.css">
+        <script src="script/core-min.js"></script>
+        <script src="script/aes.js"></script>
+        <script src="script/md5.js"></script>
+        <script src="script/highcharts.js"></script>
+        <script src="exam.js"></script>
+        <script src="plus.js"></script>
+        <title>HHS Exam Score Collector</title>
+    </head>
+    <body>
+        <a href="index.html">Back</a>
+        <center>
+            <h1>HHS Exam Score Collector</h1>
+            <hr/>
+
+            <h2>Encrypt and Load Data</h2>
+            <textarea id="txt" cols=50 rows=10 placeholder="Enter text"></textarea> <br/>
+            <input id="psd" type="password" placeholder="Enter password"> <br/>
+            <textarea id="out" cols=50 rows=5 placeholder="This is output" disabled="true"></textarea> <br/>
+            <button onclick="enc()">Encrypt</button>
+            <button onclick="dec()">Decrypt</button>
+        </center>
+        <hr/>
+        XGN from Hell Hole Studios 2019
+    </body>
+
+    <script>
+        function enc(){
+            var x=document.getElementById("txt").value;
+            var p=document.getElementById("psd").value;
+            document.getElementById("out").value=(encryptString(x,p));
+        }
+
+        function dec(){
+            var x=document.getElementById("txt").value;
+            var p=document.getElementById("psd").value;
+            document.getElementById("out").value=(decryptString(x,p));
+        }
+    </script>
+</html>

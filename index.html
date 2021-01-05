@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="script/bootstrap.min.css">
+        <script src="script/jquery.min.js"></script>
+        <script src="script/popper.min.js"></script>
+        <script src="script/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="script/font-awesome.min.css">
+        <script src="script/core-min.js"></script>
+        <script src="script/aes.js"></script>
+        <script src="script/md5.js"></script>
+        <script src="script/highcharts.js"></script>
+        <script src="exam.js"></script>
+        <script src="plus.js"></script>
+
+        <title>HHS Exam Score Collector</title>
+    </head>
+    <body>
+        <center>
+            <h1>HHS Exam Score Collector</h1>
+            <i>How are you going?</i>
+        </center>
+        <hr/>
+        <a href="examList.html">View By Exam</a> <br/>
+        <a href="graph.html">View By Graph</a> <br/>
+        <a href="encrypt.html">Encrypt and Decrypt Tool</a> <br/>
+        <hr/>
+        Data Version: <i id="ver">NOT AVAILABLE</i> <br/>
+        Remote Version: <i id="remote">LOADING REMOTE VERSION</i> <br/>
+        <hr/>
+        <button class="btn btn-primary" onclick="loadLocal()">Load Local exam.js</button>
+        <button class="btn btn-primary" onclick="initDownload()" data-toggle="modal" data-target="#myModal">Load From Github</button>
+        <button class="btn btn-primary" onclick="clears()">Clear Data</button> <br/>
+        XGN from Hell Hole Studios 2019 and 2020
+
+        <!-- 模态框 -->
+          <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+              <div class="modal-content">
+           
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                  <h4 class="modal-title">Please enter your credential</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+           
+                <!-- 模态框主体 -->
+                <div class="modal-body">
+                  Password: <input type="password" id="psd" placeholder="Password"> <br/>
+                  Save password: <input type="checkbox" id="save"> <br/>
+                  <button class="btn btn-primary" onclick="downloadReal()">Download!!</button><br/>
+                  Please note that password will be saved WITHOUT ENCRYPTION. Use at your own risk
+                </div>
+           
+                <!-- 模态框底部 -->
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+           
+              </div>
+            </div>
+          </div>
+
+    </body>
+
+    <script type="text/javascript">
+
+        function loadLocal(){
+            lss("exam",JSON.stringify(__exams))
+            lss("version",__version)
+            alert("Load Local Version Success:"+lsg("version")+"\nContent Length:"+lsg("exam").length+"\nPlease Refresh")
+        }
+
+        function clears(){
+            lss("exam","[]")
+            lss("version","N/A")
+            alert("Clear OK. Please refresh")
+        }
+
+        function initDownload(){
+            if(lsg("savePsd")=="true"){
+                document.getElementById("psd").value=lsg("savedPsd")
+                document.getElementById("save").checked=true
+            }else{
+                document.getElementById("psd").value=""
+                document.getElementById("save").checked=false
+            }
+        }
+
+
+        var loc="https://raw.githubusercontent.com/XiaoGeNintendo/NFLS-Score-Collector-Plus/main/data.txt";
+
+        function downloadReal(){
+
+            if(document.getElementById("save").checked==true){
+                lss("savePsd",true);
+                lss("savedPsd",document.getElementById("psd").value)
+            }else{
+                lss("savePsd",false);
+                lss("savedPsd","")
+            }
+
+
+            var xmlhttp;
+            if (window.XMLHttpRequest)
+            {
+                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                xmlhttp=new XMLHttpRequest();
+            }
+            else
+            {
+                // IE6, IE5 浏览器执行代码
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange=function()
+            {
+
+                if (xmlhttp.readyState==4)
+                {  
+                    if(xmlhttp.status!=200){
+                        alert("Download failed");
+                        return;
+                    }
+
+                    try{
+                        var strs=xmlhttp.responseText.split("\n"); //TODO Update Github
+
+                        var dec=decryptString(strs[1].trim(),document.getElementById("psd").value);
+
+                        console.log(dec);
+
+                        if(dec==null){
+                            alert("Password not correct")
+                        }else{
+                            var obj=eval(dec);
+
+                            lss("version",strs[0])
+                            lss("exam",JSON.stringify(obj))
+
+                            alert("Version:"+strs[0]+"\nContent Length:"+JSON.stringify(obj).length+"\nLoaded Success! Please refresh");
+                        }
+                    }catch{
+                        alert("Password not correct or load failed")
+                    }
+                }
+            }
+
+            xmlhttp.open("GET",loc,true);
+            xmlhttp.send();
+            alert("Downloading Data... Please wait");
+        }
+
+        if(lsg("version")==null){
+            lss("version","N/A");
+        }
+        document.getElementById("ver").innerHTML=lsg("version");
+
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {
+            //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {
+            // IE6, IE5 浏览器执行代码
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+
+            if (xmlhttp.readyState==4)
+            {  
+                if(xmlhttp.status!=200){
+                    alert("Download failed");
+                    return;
+                }
+
+                try{
+                    var strs=xmlhttp.responseText.split("\n"); //TODO Update Github
+
+                    $('#remote').html(strs[0]);
+                }catch{
+                    alert("Password not correct or load failed")
+                }
+            }
+        }
+
+        xmlhttp.open("GET",loc,true);
+        xmlhttp.send();
+    </script>
+</html>
