@@ -58,11 +58,17 @@
             var last=0
             for(var i=0;i<exams.length;i++){
                 var e=exams[i];
-                var loci=-1,locj=-1;
+                var loci=-1,locj=-1,lock=-1;
                 for(var j=0;j<e.subject.length;j++){
                     if(equalsIgnoreCase(e.subject[j].name,subject)){
                         locj=j;
                         break; 
+                    }
+                }
+                for(var j=0;j<e.sum.length;j++){
+                    if(equalsIgnoreCase(e.sum[j].name,subject)){
+                        lock=j;
+                        break;
                     }
                 }
                 for(var j=0;j<e.user.length;j++){
@@ -72,19 +78,40 @@
                     }
                 }
 
-                console.log(i+" "+loci+" "+locj)
-                if(locj==-1 || loci==-1){
+                // console.log(i+" "+loci+" "+locj)
+                if(loci==-1 || lock==-1 && locj==-1){
                     continue;
                 }
 
-                short.push([i+1,e.data[locj][loci]*100/e.subject[locj].max])
-                full[(i+1)+""]={
-                    "pts":e.data[locj][loci],
-                    "max":e.subject[locj].max,
-                    "last":last
-                }
+                if(locj!=-1){
+                    //use locj
+                    short.push([i+1,e.data[locj][loci]*100/e.subject[locj].max])
+                    full[(i+1)+""]={
+                        "pts":e.data[locj][loci],
+                        "max":e.subject[locj].max,
+                        "last":last,
+                        "name":e.name,
+                    }
 
-                last=i+1
+                    last=i+1
+                }else{
+                    //use lock
+                    var ss=0,sm=0
+                    for(var k=0;k<e.sum[lock].sum.length;k++){
+                        ss+=e.data[e.sum[lock].sum[k]][loci]
+                        sm+=e.subject[e.sum[lock].sum[k]].max;
+                    }
+
+                    short.push([i+1,ss*100/sm])
+                    full[(i+1)+""]={
+                        "pts":ss,
+                        "max":sm,
+                        "last":last,
+                        "name":e.name+"(sum)",
+                    }
+
+                    last=i+1
+                }
             }
 
             return {
@@ -134,7 +161,12 @@
                             lastpre=(lastt.pts*100/lastt.max);
                         }
 
-                        return this.series.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>+"+(pre-lastpre)+"%";
+                        if(pre-lastpre>0){
+                            return this.series.name+"<br/>"+score.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>+"+(pre-lastpre)+"%";
+                        }else{
+                            return this.series.name+"<br/>"+score.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>"+(pre-lastpre)+"%";
+                        }
+                        
                     }
                 }
                 
