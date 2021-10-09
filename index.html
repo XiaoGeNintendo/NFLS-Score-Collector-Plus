@@ -25,7 +25,9 @@
         <a href="encrypt.html">Encrypt and Decrypt Tool</a> <br/>
         <hr/>
         Data Version: <i id="ver">NOT AVAILABLE</i> <br/>
+        Local Version: <i id="localver">NOT AVAILABLE</i> <br/>
         Remote Version: <i id="remote">LOADING REMOTE VERSION</i> <br/>
+        (When local version or remote version is newer than data version, please consider reloading data using the buttons below ↓)
         <hr/>
         <button class="btn btn-primary" onclick="loadLocal()">Load Local exam.js</button>
         <button class="btn btn-primary" onclick="initDownload()" data-toggle="modal" data-target="#myModal">Load From Github</button>
@@ -153,6 +155,7 @@
             lss("version","N/A");
         }
         document.getElementById("ver").innerHTML=lsg("version");
+        document.getElementById("localver").innerHTML=__version;
 
         var xmlhttp;
         if (window.XMLHttpRequest)

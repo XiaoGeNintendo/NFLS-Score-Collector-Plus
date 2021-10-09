@@ -53,6 +53,10 @@
             return a.toLowerCase()==b.toLowerCase();
         }
 
+        function isBG(a,b){
+            return a=="Biology/Geography" && (b=="Biology" || b=="Geography")
+        }
+
         function getData(user,subject){
             var short=[],full={}
             var last=0
@@ -60,7 +64,7 @@
                 var e=exams[i];
                 var loci=-1,locj=-1,lock=-1;
                 for(var j=0;j<e.subject.length;j++){
-                    if(equalsIgnoreCase(e.subject[j].name,subject)){
+                    if(equalsIgnoreCase(e.subject[j].name,subject) || isBG(e.subject[j].name,subject)){
                         locj=j;
                         break; 
                     }
@@ -91,6 +95,7 @@
                         "max":e.subject[locj].max,
                         "last":last,
                         "name":e.name,
+                        "isbg":isBG(e.subject[locj].name,subject)
                     }
 
                     last=i+1
@@ -108,6 +113,7 @@
                         "max":sm,
                         "last":last,
                         "name":e.name+"(sum)",
+                        "isbg":false
                     }
 
                     last=i+1
@@ -161,12 +167,16 @@
                             lastpre=(lastt.pts*100/lastt.max);
                         }
 
+                        var ts=this.series.name+"<br/>"+score.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>"
                         if(pre-lastpre>0){
-                            return this.series.name+"<br/>"+score.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>+"+(pre-lastpre)+"%";
-                        }else{
-                            return this.series.name+"<br/>"+score.name+"<br/>"+score.pts+"/"+score.max+"("+pre+"%)<br/>"+(pre-lastpre)+"%";
+                            ts+="+"
                         }
-                        
+                        ts+=(pre-lastpre)+"%"
+                        if(score.isbg){
+                            ts+="<br/>*This is a Biology/Geography selection test.<br/>The score might be Biology OR Geography.<br/>You may have to discard it manually"
+                        }
+
+                        return ts
                     }
                 }
                 
