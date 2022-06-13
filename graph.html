@@ -95,7 +95,8 @@
                         "max":e.subject[locj].max,
                         "last":last,
                         "name":e.name,
-                        "isbg":isBG(e.subject[locj].name,subject)
+                        "isbg":isBG(e.subject[locj].name,subject),
+                        "info":e.info
                     }
 
                     last=i+1
@@ -113,7 +114,8 @@
                         "max":sm,
                         "last":last,
                         "name":e.name+"(sum)",
-                        "isbg":false
+                        "isbg":false,
+                        "info":e.info
                     }
 
                     last=i+1
@@ -175,7 +177,9 @@
                         if(score.isbg){
                             ts+="<br/>*This is a Biology/Geography selection test.<br/>The score might be Biology OR Geography.<br/>You may have to discard it manually"
                         }
-
+                        if(score.info!=undefined){
+                            ts+="<br/>"+score.info
+                        }
                         return ts
                     }
                 }
