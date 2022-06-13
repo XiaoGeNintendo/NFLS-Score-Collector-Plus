@@ -18,6 +18,7 @@
         <a href="examList.html">Back</a>
         <center>
             <h1 id="title">Unknown Exam</h1>
+            <h4 id="info"></h2>
         </center>
         <hr/>
         Hover on a subject to see its maximum score <br/>
@@ -61,6 +62,9 @@
 
         var e=exams[parseInt(id)];
         document.getElementById("title").innerHTML=e.name;
+        if(e.info!=undefined){
+            document.getElementById("info").innerHTML=e.info;
+        }
 
         var html="";
 
